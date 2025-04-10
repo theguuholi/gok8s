@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gusapp
+  labels:
+    app: gusapp
+    key: gusapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      key: gusapp
+  template:
+    metadata:
+      labels:
+        key: gusapp
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: gusapp-family
+            items:
+              - key: members
+                path: "family.txt"
+      containers:
+        - name: gusapp
+          image: "guuhworship/gogus:v1"
+          livenessProbe:
+            httpGet: #
+              path: /healthz
+              port: 8000
+            periodSeconds: 5
+            failureThreshold: 1
+            timeoutSeconds: 1 # se demorar 10 segundos
+            successThreshold: 1
+          envFrom: #ler todo o configmap
+            - configMapRef:
+                name: gusapp-env
+            - secretRef:
+                name: gusapp-secret
+          volumeMounts:
+            - mountPath: "/myFamly"
+              name: config
+          # env: #tradicional
+          #   - name: NAME
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: gusapp-env
+          #         key: NAME
+          #   - name: AGE
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: gusapp-env
+          #         key: AGE
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
