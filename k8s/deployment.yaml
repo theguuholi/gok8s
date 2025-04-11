@@ -24,34 +24,39 @@ spec:
                 path: "family.txt"
       containers:
         - name: gusapp
-          image: "guuhworship/gogus:v1"
+          image: "guuhworship/gogus:v2"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            periodSeconds: 3
+            failureThreshold: 30
+            # initialDelaySeconds: 10
           livenessProbe:
-            httpGet: #
+            httpGet:
               path: /healthz
               port: 8000
             periodSeconds: 5
             failureThreshold: 1
-            timeoutSeconds: 1 # se demorar 10 segundos
+            timeoutSeconds: 1
             successThreshold: 1
-          envFrom: #ler todo o configmap
+            # initialDelaySeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+              # readiness e quando a aplicacao esta pronta para receber trafego
+            periodSeconds: 3
+            failureThreshold: 1
+            # initialDelaySeconds: 10
+          envFrom:
             - configMapRef:
                 name: gusapp-env
             - secretRef:
                 name: gusapp-secret
           volumeMounts:
-            - mountPath: "/myFamly"
+            - mountPath: "/myfamily"
               name: config
-          # env: #tradicional
-          #   - name: NAME
-          #     valueFrom:
-          #       configMapKeyRef:
-          #         name: gusapp-env
-          #         key: NAME
-          #   - name: AGE
-          #     valueFrom:
-          #       configMapKeyRef:
-          #         name: gusapp-env
-          #         key: AGE
           resources:
             limits:
               memory: "512Mi"

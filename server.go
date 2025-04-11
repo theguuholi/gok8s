@@ -32,7 +32,7 @@ func Secret(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConfigMap(w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadFile("/go/myfamily/family.txt")
+	data, err := ioutil.ReadFile("/myfamily/family.txt")
 	if err != nil {
 		log.Fatalf("Error reading file: ", err)
 	}
