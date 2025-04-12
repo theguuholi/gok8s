@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         key: gusapp
+        app: gusapp
     spec:
       volumes:
         - name: config
@@ -24,7 +25,8 @@ spec:
                 path: "family.txt"
       containers:
         - name: gusapp
-          image: "guuhworship/gogus:v2"
+          # image: "wesleywillians/hello-go:v9.6" #"guuhworship/gogus:v2" 
+          image: "guuhworship/gogus:v2" 
           startupProbe:
             httpGet:
               path: /healthz
@@ -57,10 +59,10 @@ spec:
           volumeMounts:
             - mountPath: "/myfamily"
               name: config
-          resources:
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
+          resources: # minimo que precisa para rodar
+            limits: #ate onde esse pode utilizar de recursos (reservando recursos do cluster)
+              memory: "25Mi" # 1Gi = 1024Mi se tivesse 3 replicas de 512Mi seria 1536Mi
+              cpu: "0.05" #cluster com finito 3vcpus (3000 milicores) faca o calculo usando limites e nao o minimo
+            requests: # MINIMO QUE PRECISA PARA RODAR (reservando recursos do cluster)
+              memory: "20Mi" # 1Gi = 1024Mi se tivesse 3 replicas de 512Mi seria 1536Mi
+              cpu: "0.05"  #vCPU quanto mais compra mais poder de processamento 1000m (milicores) 500m significa que usara a metade.  0.5 significa que vai usar a metade
